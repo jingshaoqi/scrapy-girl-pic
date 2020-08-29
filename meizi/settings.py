@@ -93,6 +93,6 @@ ITEM_PIPELINES = {
 
 
 # 设置保存路径
-IMAGES_STORE = 'D:\codeingSpace\pythoncode\meizi\image\\'
+IMAGES_STORE = './meizi_image'
 # 设置时效
 IMAGES_EXPIRES = 30
