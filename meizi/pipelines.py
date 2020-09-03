@@ -20,20 +20,16 @@ class MeiziPipeline(ImagesPipeline):
         folder_strip = strip(folder)
         image_guid = request.url.split('/')[-1]
         filename = u'full/{0}/{1}'.format(folder_strip, image_guid)
-        print("---------------------------------------------------------------------------------")
         print("文件名是"+filename)
         return filename
 
     def get_media_requests(self, item, info):
         for img_url in item['images_urls']:
             referer = item['url']
-            yield Request(img_url, meta={'item': item,'referer': referer})
+            yield Request(url=img_url, meta={'item': item,'Referer': referer})
 
     def item_completed(self, results, item, info):
         image_paths = [x['path'] for ok, x in results if ok]
         if not image_paths:
             raise DropItem("Item contains no images")
         return item
-if __name__ == "__main__":
-    a = '我是一个？\*|“<>:/错误的字符串'
-    print(strip(a))

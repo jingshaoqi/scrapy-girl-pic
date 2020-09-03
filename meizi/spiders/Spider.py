@@ -6,31 +6,24 @@ from meizi.items import MeiziItem
 class Meizi(CrawlSpider):
     name = 'meizi'
     allowed_domains = ['mzitu.com']
-    start_urls = ['http://www.mzitu.com/']
+    start_urls = ['https://www.mzitu.com/']
     img_urls = []
     rules = (
-        Rule(LinkExtractor(allow=('http://www.mzitu.com/\d{1,6}',), deny=('http://www.mzitu.com/\d{1,6}/\d{1,6}')),
-             callback='parse_item', follow=True),
+        Rule(LinkExtractor(allow=('https://www.mzitu.com/')), callback='parse_item', follow=False),
     )
 
     def parse_item(self,response):
-        item = MeiziItem()
-        # max_num 为页面最后一张图片的位置
-        # /html/body/div[2]/div[1]/div[4]/a[5]/span
-        max_num = response.xpath("descendant::div[@class='main']/div[@class='content']/div[@class='pagenavi']/a[last()-1]/span/text()").extract_first(default="N/A")
-        item['name'] = response.xpath("./*//div[@class='main']/div[1]/h2/text()").extract_first(default="N/A")
-        item['url'] = response.url
-        for num in range(1, int(max_num)):
-            # page_url 为每张图片所在的页面地址
-            page_url = response.url + '/' + str(num)
-            yield Request(page_url, callback=self.img_url)
-        item['images_urls'] = self.img_urls
-        print("*****************************************************************")
-        print(item)
-        yield item
-
-    def img_url(self,response):
-        img_urls = response.xpath("descendant::div[@class='main-image']/descendant::img/@src").extract()
-        for img_url in img_urls:
-            # 保存url
-            self.img_urls.append(img_url)
+        print('enter parse_item-----------')
+        with open('res.html','w') as f:
+            f.write(response.text)
+        imgs = response.xpath('//div[@class="main-content"]/div[@class="postlist"]/ul/li/a/img')
+        for i in imgs:
+            next_src = i.xpath('//@data-original').extract_first()
+            alt = i.xpath('//@alt').extract_first()
+            item = MeiziItem()
+            item['name'] = alt
+            item['url'] = response.url
+            item['images_urls'] = next_src
+            print(item)
+            yield item
+            break
