@@ -19,14 +19,14 @@ class MeiziPipeline(ImagesPipeline):
         folder = item['name']
         folder_strip = strip(folder)
         image_guid = request.url.split('/')[-1]
-        filename = u'full/{0}/{1}'.format(folder_strip, image_guid)
+        filename = u'{0}_{1}'.format(folder_strip, image_guid)
         print("文件名是"+filename)
         return filename
 
     def get_media_requests(self, item, info):
-        for img_url in item['images_urls']:
-            referer = item['url']
-            yield Request(url=img_url, meta={'item': item,'Referer': referer})
+        img_url = item['images_urls']
+        referer = item['url']
+        yield Request(url=img_url, meta={'item': item, 'Referer': referer})
 
     def item_completed(self, results, item, info):
         image_paths = [x['path'] for ok, x in results if ok]
